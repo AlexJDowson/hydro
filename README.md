@@ -4,6 +4,10 @@ simple hydration reminder app
 
 ![logo](.media/icon.png)
 
+## Google PlayStore
+
+https://play.google.com/store/apps/details?id=at.florianschuster.hydro
+
 ## how to create a release
 
 ### local
