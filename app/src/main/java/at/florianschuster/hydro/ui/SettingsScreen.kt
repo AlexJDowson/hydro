@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -48,7 +47,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -65,7 +63,6 @@ import at.florianschuster.hydro.ui.base.SettingItem
 import at.florianschuster.hydro.ui.base.SettingsSection
 import at.florianschuster.hydro.ui.base.TimePickerDialog
 import at.florianschuster.hydro.ui.base.ToggleSettingItem
-import at.florianschuster.hydro.ui.base.conditional
 import kotlinx.datetime.LocalTime
 
 @Composable
@@ -88,6 +85,7 @@ fun SettingsScreen(
         SettingsSection(
             modifier = Modifier
                 .padding(top = contentPadding.calculateTopPadding())
+                .padding(top = 16.dp)
                 .padding(horizontal = 16.dp),
             title = "Hydration"
         ) {
@@ -211,16 +209,7 @@ fun SettingsToolbar(
 ) {
     CenterAlignedTopAppBar(
         modifier = Modifier
-            .fillMaxWidth()
-            .conditional(scrollBehavior.state.overlappedFraction == 0f) {
-                statusBarsPadding()
-            }
-            .conditional(scrollBehavior.state.overlappedFraction > 0.05f) {
-                shadow(
-                    elevation = 5.dp,
-                    spotColor = Color.DarkGray
-                )
-            },
+            .fillMaxWidth(),
         navigationIcon = {
             IconButton(
                 onClick = onGoBack,
@@ -240,7 +229,6 @@ fun SettingsToolbar(
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = Color.Transparent,
-            scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer
         ),
         scrollBehavior = scrollBehavior
     )
@@ -423,7 +411,7 @@ private fun NotificationPermissionSettingsAlert(onDismiss: () -> Unit) {
         text = {
             Text(
                 text = "The app is unable to show Reminders " +
-                    "without the notification permission."
+                        "without the notification permission."
             )
         },
         confirmButton = {
@@ -461,7 +449,7 @@ private fun AlarmSystemSettingsAlert(onDismiss: () -> Unit) {
         text = {
             Text(
                 text = "The app is unable to show Reminders " +
-                    "without the alarm permission."
+                        "without the alarm permission."
             )
         },
         confirmButton = {
@@ -552,7 +540,7 @@ private fun DebugSettingsSection(
         SettingItem(
             fieldName = "Reset hydration today",
             value = "This sets today's hydration from ${todayHydration.format(liquidUnit)} " +
-                "to ${Milliliters.ZERO.format(liquidUnit)}",
+                    "to ${Milliliters.ZERO.format(liquidUnit)}",
             icon = {
                 Icon(
                     imageVector = Icons.Outlined.RestartAlt,
