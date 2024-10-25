@@ -150,6 +150,9 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         DataSettingsSection(
+            todayHydration = state.todayHydration,
+            liquidUnit = state.liquidUnit,
+            onResetToday = { dispatch(AppAction.ResetToday) },
             onDeleteAll = { dispatch(AppAction.DeleteAll) }
         )
 
@@ -186,9 +189,6 @@ fun SettingsScreen(
 
         if (state.isDebug) {
             DebugSettingsSection(
-                todayHydration = state.todayHydration,
-                liquidUnit = state.liquidUnit,
-                onResetToday = { dispatch(AppAction.ResetToday) },
                 onShowReminderNotification = {
                     dispatch(AppAction.ShowHydrationReminderNotification(forced = true))
                 }
@@ -482,13 +482,28 @@ private fun Context.goToAlarmSystemSettings() {
 @Composable
 private fun DataSettingsSection(
     modifier: Modifier = Modifier,
-    onDeleteAll: () -> Unit
+    todayHydration: Milliliters,
+    liquidUnit: LiquidUnit,
+    onResetToday: () -> Unit,
+    onDeleteAll: () -> Unit,
 ) {
     var showDeleteAllDialog by remember { mutableStateOf(false) }
     SettingsSection(
         modifier = modifier.padding(horizontal = 16.dp),
         title = "Data"
     ) {
+        SettingItem(
+            fieldName = "Reset hydration today",
+            value = "This sets today's hydration from ${todayHydration.format(liquidUnit)} " +
+                    "to ${Milliliters.ZERO.format(liquidUnit)}",
+            icon = {
+                Icon(
+                    imageVector = Icons.Outlined.RestartAlt,
+                    contentDescription = null
+                )
+            },
+            onClick = onResetToday
+        )
         SettingItem(
             fieldName = "Delete all stored data",
             value = "This includes all settings and the complete hydration history",
@@ -528,27 +543,12 @@ private fun DataSettingsSection(
 @Composable
 private fun DebugSettingsSection(
     modifier: Modifier = Modifier,
-    todayHydration: Milliliters,
-    liquidUnit: LiquidUnit,
-    onResetToday: () -> Unit,
     onShowReminderNotification: () -> Unit
 ) {
     SettingsSection(
         modifier = modifier.padding(horizontal = 16.dp),
         title = "Debug"
     ) {
-        SettingItem(
-            fieldName = "Reset hydration today",
-            value = "This sets today's hydration from ${todayHydration.format(liquidUnit)} " +
-                    "to ${Milliliters.ZERO.format(liquidUnit)}",
-            icon = {
-                Icon(
-                    imageVector = Icons.Outlined.RestartAlt,
-                    contentDescription = null
-                )
-            },
-            onClick = onResetToday
-        )
 
         SettingItem(
             fieldName = "Show Reminder Notification",
