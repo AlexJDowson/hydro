@@ -228,7 +228,7 @@ fun SettingsToolbar(
             )
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = Color.Transparent,
+            containerColor = Color.Transparent
         ),
         scrollBehavior = scrollBehavior
     )
@@ -411,7 +411,7 @@ private fun NotificationPermissionSettingsAlert(onDismiss: () -> Unit) {
         text = {
             Text(
                 text = "The app is unable to show Reminders " +
-                        "without the notification permission."
+                    "without the notification permission."
             )
         },
         confirmButton = {
@@ -449,7 +449,7 @@ private fun AlarmSystemSettingsAlert(onDismiss: () -> Unit) {
         text = {
             Text(
                 text = "The app is unable to show Reminders " +
-                        "without the alarm permission."
+                    "without the alarm permission."
             )
         },
         confirmButton = {
@@ -485,7 +485,7 @@ private fun DataSettingsSection(
     todayHydration: Milliliters,
     liquidUnit: LiquidUnit,
     onResetToday: () -> Unit,
-    onDeleteAll: () -> Unit,
+    onDeleteAll: () -> Unit
 ) {
     var showDeleteAllDialog by remember { mutableStateOf(false) }
     SettingsSection(
@@ -495,7 +495,7 @@ private fun DataSettingsSection(
         SettingItem(
             fieldName = "Reset hydration today",
             value = "This sets today's hydration from ${todayHydration.format(liquidUnit)} " +
-                    "to ${Milliliters.ZERO.format(liquidUnit)}",
+                "to ${Milliliters.ZERO.format(liquidUnit)}",
             icon = {
                 Icon(
                     imageVector = Icons.Outlined.RestartAlt,
@@ -549,7 +549,6 @@ private fun DebugSettingsSection(
         modifier = modifier.padding(horizontal = 16.dp),
         title = "Debug"
     ) {
-
         SettingItem(
             fieldName = "Show Reminder Notification",
             icon = {
