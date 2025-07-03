@@ -55,7 +55,7 @@ class SqliteHydrationHistoryStore(
         klass = DayDatabase::class.java,
         name = DATABASE_NAME
     ).apply {
-        if (isDebug) fallbackToDestructiveMigration()
+        if (isDebug) fallbackToDestructiveMigration(dropAllTables = true)
     }.build()
 
     init {

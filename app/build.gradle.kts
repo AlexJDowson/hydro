@@ -7,27 +7,24 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.ktlint)
-    id("kotlin-parcelize")
+    alias(libs.plugins.parcelize)
     alias(libs.plugins.baselineprofile)
+    alias(libs.plugins.room)
 }
 
 android {
     namespace = "at.florianschuster.hydro"
-    compileSdk = 34
+    compileSdk = libs.versions.targetSdk.get().toInt()
 
     defaultConfig {
         applicationId = "at.florianschuster.hydro"
-        minSdk = 31
-        targetSdk = 34
-        versionCode = 4
-        versionName = "1.0.0"
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
+        versionCode = 5
+        versionName = "1.1.0"
 
         vectorDrawables {
             useSupportLibrary = true
-        }
-
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
         }
     }
 
@@ -48,15 +45,12 @@ android {
 
             storePassword = localProperties.getProperty("signingStorePassword")
                 ?: System.getenv("SIGNING_STORE_PASSWORD")
-                ?: null
 
             keyAlias = localProperties.getProperty("signingKeyAlias")
                 ?: System.getenv("SIGNING_KEY_ALIAS")
-                ?: null
 
             keyPassword = localProperties.getProperty("signingKeyPassword")
                 ?: System.getenv("SIGNING_KEY_PASSWORD")
-                ?: null
         }
     }
 
@@ -80,12 +74,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = JavaVersion.VERSION_21.toString()
     }
 
     buildFeatures {
@@ -97,6 +91,10 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "META-INF/versions/9/previous-compilation-data.bin"
         }
+    }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 }
 
