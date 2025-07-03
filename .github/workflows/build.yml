@@ -7,15 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: "Set up JDK 17"
+    - name: "Set up Java"
       uses: actions/setup-java@v4
       with:
-        java-version: "17"
+        java-version: "21"
         distribution: "adopt"
         cache: gradle
-
     - name: "Grant execute permission for gradlew"
       run: chmod +x gradlew
-
     - name: "Build with Gradle"
       run: ./gradlew ktlintCheck :app:buildDebug
