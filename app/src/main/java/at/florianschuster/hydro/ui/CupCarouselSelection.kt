@@ -30,6 +30,7 @@ import at.florianschuster.hydro.model.Cup
 import at.florianschuster.hydro.model.Milliliters
 import at.florianschuster.hydro.model.icon
 import at.florianschuster.hydro.ui.base.HydrationCarousel
+import at.florianschuster.hydro.model.LiquidUnit
 
 @Composable
 fun CupCarouselSelection(
@@ -95,14 +96,13 @@ fun CupCarouselSelection(
                     }
                 }
 
-
                 if (showCustomDialog) {
-                    CustomMlDialog(
-                        initial = 500,
+                    CustomSizeDialog(
+                        liquidUnit = state.liquidUnit,
                         onConfirm = { ml ->
                             showCustomDialog = false
                             val bounded = ml.coerceIn(50, 5000)
-                            if (state.selectedCups.any { it.milliliters == Milliliters(bounded) }) return@CustomMlDialog
+                            if (state.selectedCups.any { it.milliliters == Milliliters(bounded) }) return@CustomSizeDialog
                             if (state.selectedCups.size >= 3) {
                                 showCanOnlySelectThreeAlert = true
                             } else {
@@ -134,14 +134,28 @@ fun CupCarouselSelection(
     }
 }
 @Composable
-private fun CustomMlDialog(
-    initial: Int,
-    onConfirm: (Int) -> Unit,
+private fun CustomSizeDialog(
+    liquidUnit: LiquidUnit,
+    onConfirm: (Int /* ml */) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    var text by remember { mutableStateOf(initial.toString()) }
-    val parsed = text.filter(Char::isDigit).toIntOrNull()
-    val valid = parsed != null && parsed in 50..5000
+    val (unitLabel, toMlFactor, minMl) = when (liquidUnit) {
+        LiquidUnit.Milliliter   -> Triple("ml", 1.0, 50)
+        LiquidUnit.USFluidOunce -> Triple("fl oz (US)", 29.5735, 1)
+        LiquidUnit.UKFluidOunce -> Triple("fl oz (UK)", 28.4131, 1)
+    }
+    val maxMl = 5000
+    val minDisplay = (minMl / toMlFactor).coerceAtLeast(1.0).toInt()
+    val maxDisplay = (maxMl / toMlFactor).toInt()
+
+    var text by remember { mutableStateOf("") }
+    val sanitized = remember(text) {
+        text.replace(',', '.')
+            .filterIndexed { i, c -> c.isDigit() || (c == '.' && !text.take(i).contains('.')) }
+    }
+    val entered = sanitized.toDoubleOrNull()
+    val ml = entered?.let { (it * toMlFactor).toInt() }
+    val valid = ml != null && ml in minMl..maxMl
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -150,24 +164,28 @@ private fun CustomMlDialog(
             Column {
                 androidx.compose.material3.OutlinedTextField(
                     value = text,
-                    onValueChange = { s -> text = s.filter(Char::isDigit).take(5) },
-                    label = { Text("Millilitres") },
+                    onValueChange = { text = it },
+                    label = { Text("Amount") },
+                    placeholder = { Text(if (liquidUnit == LiquidUnit.Milliliter) "500" else "16") },
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number
-                    ),
-                    suffix = { Text("ml") },
-                    isError = !valid
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    suffix = { Text(unitLabel) },
+                    isError = !valid && text.isNotEmpty()
                 )
                 Spacer(Modifier.height(4.dp))
-                if (!valid) {
-                    Text("Enter a value between 50 and 5000 ml",
-                        color = MaterialTheme.colorScheme.error)
-                }
+                Text(
+                    if (valid && ml != null) "≈ $ml ml"
+                    else "Enter a value between $minDisplay–$maxDisplay $unitLabel",
+                    color = if (valid || text.isEmpty())
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    else
+                        MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
         },
         confirmButton = {
-            Button(enabled = valid, onClick = { onConfirm(parsed!!) }) { Text("OK") }
+            Button(enabled = valid, onClick = { onConfirm(ml!!) }) { Text("OK") }
         },
         dismissButton = {
             androidx.compose.material3.TextButton(onClick = onDismiss) { Text("Cancel") }
