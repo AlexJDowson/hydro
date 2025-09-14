@@ -32,7 +32,8 @@ fun HydrationCarousel(
     liquidUnit: LiquidUnit,
     selected: List<Milliliters> = emptyList(),
     onClick: (index: Int, Milliliters) -> Unit = { _, _ -> },
-    contentBelowItem: @Composable (index: Int) -> Unit = {}
+    contentBelowItem: @Composable (index: Int) -> Unit = {},
+    trailingContent: @Composable () -> Unit = {}
 ) {
     LazyRow(
         modifier = modifier,
@@ -49,6 +50,7 @@ fun HydrationCarousel(
                 contentBelowItem = contentBelowItem
             )
         }
+        item { trailingContent() }
     }
 }
 
